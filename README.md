@@ -1,24 +1,31 @@
 # Ekara Central
 
-Customer, project and intelligent knowledge management hub.
+Customer, project and operational knowledge hub.
 
-## Initial modules
+## Stack
+- Next.js App Router + TypeScript
+- Supabase PostgreSQL, Auth and Storage
+- PostgreSQL full-text search + trigram matching for live knowledge suggestions
 
-- Customer records and contacts
-- Project workspaces and technical handover information
-- Sitewide knowledge search with solution recommendations
-
-## Development
-
+## Run locally
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
+## Database setup
+1. Create a Supabase project.
+2. Open **SQL Editor** and run `supabase/migrations/202611020001_initial_schema.sql`.
+3. Copy `.env.example` to `.env.local` and fill in the Supabase project URL and anon/publishable key.
+4. Restart the dev server after changing environment variables.
 
-The current dashboard uses demonstration data. Database persistence, authentication, document uploads, permissions and AI-backed retrieval will be added in subsequent stages.
+The migration creates customer/contact, project, environment, component, access-reference, document and knowledge article tables, plus a sitewide fuzzy/full-text search function.
 
 ## Security
+- Do not store raw passwords, API keys, private keys, tokens or recovery codes in the app database.
+- Store secrets in a password manager and keep only approved vault references and access procedures.
+- The initial RLS policies assume authenticated internal users. Before external/customer access, replace them with role- and customer/project-membership-based policies.
+- Supabase service-role keys must remain server-only and must never use a `NEXT_PUBLIC_` prefix.
 
-Do not commit passwords, API keys, tokens, production environment files or customer secrets. Store credentials in a secure vault and retain only approved references in project records.
+## Current status
+The UI mockup remains in place. The first database schema and typed domain models are committed; the next implementation step is wiring authenticated CRUD and live knowledge search into the UI.
