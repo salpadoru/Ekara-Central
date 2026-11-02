@@ -45,3 +45,33 @@ body{font-size:16px}
 .search-small input{font-size:14px}
 .footer-note{font-size:12px}
 @media(max-width:720px){.page-title{font-size:27px}.page-subtitle{font-size:15px}.stat-value{font-size:28px}}
+
+
+/* Stronger accessibility/readability scale */
+body{font-size:18px;line-height:1.55}
+.nav-item{font-size:17px;min-height:46px}
+.brand-name{font-size:20px}.brand-sub{font-size:14px}
+.nav-label{font-size:13px}
+.crumb{font-size:16px}
+.page-title{font-size:38px;line-height:1.2;letter-spacing:-1px}
+.page-subtitle{font-size:18px;line-height:1.55}
+.eyebrow{font-size:14px}
+.primary-button,.secondary-button{font-size:16px;padding:13px 18px}
+.stat-top{font-size:16px}.stat-value{font-size:36px}.stat-foot{font-size:16px}
+.panel-title{font-size:20px}.panel-sub{font-size:16px}
+.search-title{font-size:21px}.search-desc{font-size:16px}
+.search-box{min-height:60px}.search-box input{font-size:18px}
+.search-hint{font-size:14px}
+.suggestion{font-size:16px;padding:16px}
+.solution-title{font-size:17px}.solution-meta{font-size:15px}
+.project-name{font-size:17px}.project-customer{font-size:15px}
+.status{font-size:14px;padding:6px 10px}
+.activity-title{font-size:16px}.activity-time{font-size:14px}
+.data-table th{font-size:14px}.data-table td{font-size:16px}
+.table-primary{font-size:16px}.table-secondary{font-size:15px}
+.kb-card h3{font-size:19px}.kb-card p{font-size:16px}.kb-meta{font-size:14px}
+.text-link{font-size:16px}.search-small input{font-size:16px}
+.footer-note{font-size:14px}
+.dashboard-actions{display:flex;gap:10px;flex-wrap:wrap}
+.dashboard-heading{align-items:center}
+@media(max-width:720px){.page-title{font-size:31px}.page-subtitle{font-size:16px}.stat-value{font-size:30px}.dashboard-actions{width:100%}}
