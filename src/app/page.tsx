@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Activity, ArrowUpRight, BookOpen, Bot, Building2, CheckCircle2, ChevronRight, CircleHelp, Clock3, Code2, FileText, FolderKanban, Gauge, Globe, HardDrive, Lightbulb, LifeBuoy, Plus, Search, Server, ShieldCheck, Sparkles, Users, Wrench } from "lucide-react";
 
 type Section = "Dashboard" | "Customers" | "Projects" | "Knowledge Base";
@@ -29,6 +31,42 @@ const articles = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const [authReady, setAuthReady] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userRole, setUserRole] = useState("");
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      router.replace("/login?setup=missing");
+      return;
+    }
+    let active = true;
+    const loadProfile = async (userId: string, email: string) => {
+      setUserEmail(email);
+      const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+      if (!active) return;
+      setUserRole(data?.role ?? "member");
+      setAuthReady(true);
+    };
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      if (!data.session) {
+        router.replace("/login");
+        return;
+      }
+      void loadProfile(data.session.user.id, data.session.user.email ?? "");
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT" || !session) {
+        router.replace("/login");
+      }
+    });
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
+  }, [router]);
   const [section, setSection] = useState<Section>("Dashboard");
   const [query, setQuery] = useState("");
   const [selectedSolution, setSelectedSolution] = useState<(typeof solutions)[number] | null>(null);
@@ -36,6 +74,12 @@ export default function Home() {
   const matches = useMemo(() => query.trim() ? solutions.filter(s => (s.title + " " + s.description + " " + s.keywords).toLowerCase().includes(query.toLowerCase())) : [], [query]);
   const nav = [{ label: "Dashboard" as Section, icon: Gauge }, { label: "Customers" as Section, icon: Building2 }, { label: "Projects" as Section, icon: FolderKanban }, { label: "Knowledge Base" as Section, icon: BookOpen }];
   const goSearch = (text: string) => { setQuery(text); setSelectedSolution(null); setSection("Dashboard"); };
+  const signOut = async () => {
+    const supabase = getSupabaseBrowserClient();
+    await supabase?.auth.signOut();
+    router.replace("/login");
+  };
+  if (!authReady) return <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", color: "#647184" }}>Loading your Ekara workspace…</div>;
   return <div className="app-shell">
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark">E</div><div><div className="brand-name">Ekara Central</div><div className="brand-sub">Project Knowledge Hub</div></div></div>
@@ -47,7 +91,7 @@ export default function Home() {
       <div className="sidebar-bottom"><button className="nav-item"><CircleHelp/><span>Help & feedback</span></button></div>
     </aside>
     <div className="workspace">
-      <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div className="avatar">ES</div></div></header>
+      <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ textAlign: "right", lineHeight: 1.25 }}><div style={{ fontSize: 13, fontWeight: 700, color: "#344154" }}>{userEmail}</div><div style={{ fontSize: 11, color: "#8993a2", textTransform: "capitalize" }}>{userRole.replace("_", " ")}</div></div><button className="secondary-button" onClick={signOut}>Sign out</button></div></div></header>
       <main className="main">
         {section === "Dashboard" && <>
           <div className="welcome-row dashboard-heading"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Your customers, projects and operational knowledge — all in one place.</p></div><div className="dashboard-actions"><button className="primary-button" onClick={() => setSection("Customers")}><Plus size={17}/> New customer</button><button className="primary-button" onClick={() => setSection("Projects")}><Plus size={17}/> New project</button></div></div>
