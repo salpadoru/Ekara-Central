@@ -99,3 +99,13 @@ body{font-size:18px;line-height:1.55}
 .global-search-foot{border-top:1px solid #edf0f4;padding:10px 8px 3px;color:#9aa3af;font-size:11px}
 @media(max-width:900px){.global-search{max-width:390px}.topbar{gap:12px}.top-actions{gap:8px}}
 @media(max-width:720px){.global-search{min-width:0;max-width:none;flex:1}.global-search-input{height:40px;padding:0 9px}.global-search-input input{font-size:13px}.global-search-input kbd{display:none}.top-actions .icon-button{display:none}.crumb{display:none}}
+
+
+/* Search belongs in the workspace, while the top strip stays breadcrumb-only. */
+.main-search{position:relative;z-index:15;max-width:760px;margin:0 0 24px}
+.main-search .global-search{max-width:100%;width:100%}
+.main-search .global-search-input{height:58px;background:#fff;border-color:#dfe5ed;padding:0 18px}
+.main-search .global-search-input input{font-size:17px}
+.main-search .global-search-input kbd{font-size:12px}
+.topbar{z-index:10}
+@media(max-width:720px){.main-search{max-width:100%;margin-bottom:18px}.main-search .global-search-input{height:52px}}
