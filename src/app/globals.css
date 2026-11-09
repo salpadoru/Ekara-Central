@@ -109,3 +109,37 @@ body{font-size:18px;line-height:1.55}
 .main-search .global-search-input kbd{font-size:12px}
 .topbar{z-index:10}
 @media(max-width:720px){.main-search{max-width:100%;margin-bottom:18px}.main-search .global-search-input{height:52px}}
+
+
+/* Dashboard refinement: quiet chrome, one focal search, and fewer competing cards. */
+:root{--paper:#f7f8fa;--line:#e9edf2;--shadow:0 2px 12px rgba(24,34,48,.035)}
+.sidebar{width:232px;padding:28px 14px}
+.brand{padding:0 12px 38px}
+.brand-sub{display:none}
+.nav-item{min-height:44px;margin:4px 0;padding:10px 13px;font-size:15px;border-radius:8px}
+.topbar{height:64px;padding:0 34px;background:#fff}
+.crumb{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0;color:#8a94a3}
+.crumb strong{font-weight:650}
+.main{max-width:1440px;padding:34px 54px 64px}
+.main-search{max-width:100%;margin:0 0 34px}
+.main-search .global-search-input{height:58px;border-radius:12px;background:#fff;border-color:#e5e9ef;box-shadow:0 2px 8px rgba(20,35,55,.025);padding:0 20px}
+.main-search .global-search-input input{font-size:17px}
+.dashboard-heading{align-items:center;margin-bottom:24px}
+.page-title{font-size:34px;letter-spacing:-1.2px}
+.dashboard-actions{display:flex;gap:9px}
+.dashboard-actions .primary-button,.dashboard-actions .secondary-button{padding:10px 15px;font-size:14px;box-shadow:none}
+.dashboard-projects{max-width:100%;padding:24px 26px;background:#fff;border:1px solid #e9edf2;border-radius:14px;box-shadow:0 2px 12px rgba(24,34,48,.025)}
+.dashboard-projects .panel-header{margin-bottom:12px}
+.dashboard-projects .panel-title{font-size:18px}
+.project-row-button{width:100%;border:0;background:transparent;text-align:left;cursor:pointer;padding:16px 4px}
+.project-row-button:hover{background:#fafbfd}
+.project-row-button .project-logo{background:#eef3fb;color:#45648f}
+.project-row-copy{min-width:0;flex:1}
+.project-row-button .status{margin-left:0}
+.project-chevron{color:#a3adba}
+.dashboard-empty{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#9aa4b2}
+.dashboard-empty div{font-size:16px;font-weight:650;color:#536174}
+.dashboard-empty .text-link{font-size:14px}
+.panel{box-shadow:0 2px 12px rgba(24,34,48,.025)}
+@media(max-width:1100px){.main{padding:28px 30px 48px}}
+@media(max-width:720px){.sidebar{width:66px;padding:18px 8px}.brand{padding:0 6px 28px}.brand-name,.brand-sub,.nav-item span{display:none}.nav-item{justify-content:center;padding:12px 0}.topbar{height:58px;padding:0 14px}.main{padding:20px 16px 36px}.main-search{margin-bottom:26px}.dashboard-heading{align-items:flex-start}.dashboard-actions{width:100%}.dashboard-actions button{flex:1;justify-content:center}.dashboard-projects{padding:17px}.page-title{font-size:29px}}
