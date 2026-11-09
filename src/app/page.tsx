@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import GlobalSearch from "@/components/global-search";
-import { Activity, ArrowUpRight, BookOpen, Building2, ChevronRight, CircleHelp, Code2, FileText, FolderKanban, Gauge, Plus, Search, Server, ShieldCheck } from "lucide-react";
+import { Activity, BookOpen, Building2, ChevronRight, CircleHelp, Code2, FileText, FolderKanban, Gauge, HardDrive, Plus, Search, Server, ShieldCheck } from "lucide-react";
 
 type Section = "Dashboard" | "Customers" | "Projects" | "Knowledge Base";
 const customers = [
