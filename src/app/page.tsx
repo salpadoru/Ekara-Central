@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import GlobalSearch from "@/components/global-search";
 import { Activity, ArrowUpRight, BookOpen, Bot, Building2, CheckCircle2, ChevronRight, CircleHelp, Clock3, Code2, FileText, FolderKanban, Gauge, Globe, HardDrive, Lightbulb, LifeBuoy, Plus, Search, Server, ShieldCheck, Sparkles, Users, Wrench } from "lucide-react";
 
 type Section = "Dashboard" | "Customers" | "Projects" | "Knowledge Base";
@@ -91,7 +92,7 @@ export default function Home() {
       <div className="sidebar-bottom"><button className="nav-item"><CircleHelp/><span>Help & feedback</span></button></div>
     </aside>
     <div className="workspace">
-      <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ textAlign: "right", lineHeight: 1.25 }}><div style={{ fontSize: 13, fontWeight: 700, color: "#344154" }}>{userEmail}</div><div style={{ fontSize: 11, color: "#8993a2", textTransform: "capitalize" }}>{userRole.replace("_", " ")}</div></div><button className="secondary-button" onClick={signOut}>Sign out</button></div></div></header>
+      <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><GlobalSearch onSelect={hit => { const target: Section = hit.kind === "Customer" || (hit.kind === "Contact" && !hit.projectName) ? "Customers" : hit.kind === "Knowledge" ? "Knowledge Base" : "Projects"; setSection(target); setFilter(hit.projectName || hit.customerName || hit.title); setQuery(""); setSelectedSolution(null); }} /><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ textAlign: "right", lineHeight: 1.25 }}><div style={{ fontSize: 13, fontWeight: 700, color: "#344154" }}>{userEmail}</div><div style={{ fontSize: 11, color: "#8993a2", textTransform: "capitalize" }}>{userRole.replace("_", " ")}</div></div><button className="secondary-button" onClick={signOut}>Sign out</button></div></div></header>
       <main className="main">
         {section === "Dashboard" && <>
           <div className="welcome-row dashboard-heading"><div><h1 className="page-title">Dashboard</h1><p className="page-subtitle">Your customers, projects and operational knowledge — all in one place.</p></div><div className="dashboard-actions"><button className="primary-button" onClick={() => setSection("Customers")}><Plus size={17}/> New customer</button><button className="primary-button" onClick={() => setSection("Projects")}><Plus size={17}/> New project</button></div></div>
