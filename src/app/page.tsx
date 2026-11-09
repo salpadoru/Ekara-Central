@@ -90,10 +90,7 @@ export default function Home() {
       <div className="brand"><div className="brand-mark">E</div><div><div className="brand-name">Ekara Central</div><div className="brand-sub">Project Knowledge Hub</div></div></div>
       
       {nav.map(item => <button key={item.label} className={`nav-item ${section === item.label ? "active" : ""}`} onClick={() => { setSection(item.label); setQuery(""); setSelectedSolution(null); }}><item.icon /><span>{item.label}</span></button>)}
-      <div className="nav-label" style={{ marginTop: 18 }}>TOOLS</div>
-      <button className="nav-item" onClick={() => goSearch("website down")}><LifeBuoy/><span>Support & Recovery</span></button>
-      <button className="nav-item" onClick={() => goSearch("deploy website update")}><Wrench/><span>Operations</span></button>
-      <div className="sidebar-bottom"><button className="nav-item"><CircleHelp/><span>Help & feedback</span></button></div>
+
     </aside>
     <div className="workspace">
       <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ textAlign: "right", lineHeight: 1.25 }}><div style={{ fontSize: 13, fontWeight: 700, color: "#344154" }}>{userEmail}</div><div style={{ fontSize: 11, color: "#8993a2", textTransform: "capitalize" }}>{userRole.replace("_", " ")}</div></div><button className="secondary-button" onClick={signOut}>Sign out</button></div></div></header>
