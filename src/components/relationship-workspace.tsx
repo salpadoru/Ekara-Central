@@ -40,7 +40,6 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
  const [componentProjectIds,setComponentProjectIds]=useState<string[]>([]);
  useEffect(()=>{const db=getSupabaseBrowserClient();if(!db||!chosenComponent){setComponentProjectIds([]);return;}db.from("project_component_links").select("project_id").eq("component_id",chosenComponent.id).then(({data})=>setComponentProjectIds((data??[]).map(x=>x.project_id)));},[chosenComponent?.id]);
  const detailProjects=chosenComponent?projects.filter(p=>componentProjectIds.includes(p.id)):linkedProjects;
- const projectComponents=chosenProject?components.filter(c=>false):[];
  const [projectComponentRows,setProjectComponentRows]=useState<Component[]>([]);
  useEffect(()=>{const db=getSupabaseBrowserClient();if(!db||!chosenProject){setProjectComponentRows([]);return;}db.from("project_component_links").select("component_id").eq("project_id",chosenProject.id).then(async({data})=>{const ids=(data??[]).map(x=>x.component_id);setProjectComponentRows(components.filter(c=>ids.includes(c.id)));});},[chosenProject?.id,components]);
  const save=async(e:React.FormEvent)=>{e.preventDefault();const db=getSupabaseBrowserClient();if(!db)return;setSaving(true);setError("");let failure:string|null=null;
