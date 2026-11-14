@@ -287,3 +287,7 @@ body{font-size:16px;line-height:1.55}
   .project-row-button .status{font-size:14px}
   .global-search-input input,.main-search .global-search-input input{font-size:16px}
 }
+
+
+.relationship-layout{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:20px}
+@media(max-width:820px){.relationship-layout{grid-template-columns:minmax(0,1fr);gap:14px}.relationship-layout>section:first-child{max-height:360px}.relationship-layout>section:last-child{min-height:360px}}
