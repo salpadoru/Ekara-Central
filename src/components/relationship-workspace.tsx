@@ -23,7 +23,8 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
   const [c,p,b,l]=await Promise.all([
    db.from("customers").select("id,name,customer_code,email,website_url,status").order("name"),
    db.from("projects").select("id,name,project_code,customer_id,project_type,status,priority,customers(name)").order("name"),
-   db.from("components").select("id,name,component_code,customer_id,component_type,vendor,status,hosting_provider,production_url,repository_url,domain_name,customers(name)").order("name")
+   db.from("components").select("id,name,component_code,customer_id,component_type,vendor,status,hosting_provider,production_url,repository_url,domain_name,customers(name)").order("name"),
+   db.from("project_component_links").select("project_id,component_id")
   ]);
   if(c.error)setError(c.error.message);else setCustomers(c.data??[]);
   if(p.error)setError(p.error.message);else setProjects((p.data??[]) as unknown as Project[]);
