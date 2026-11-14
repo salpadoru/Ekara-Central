@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import GlobalSearch from "@/components/global-search";
 import TaskCards from "@/components/task-cards";
-import WorkspaceRecords from "@/components/workspace-records";
-import { Activity, BookOpen, Building2, ChevronRight, CircleHelp, Code2, FileText, FolderKanban, Gauge, HardDrive, Menu, Plus, Search, Server, ShieldCheck, X } from "lucide-react";
+import RelationshipWorkspace from "@/components/relationship-workspace";
+import { Activity, Building2, Boxes, ChevronRight, CircleHelp, FolderKanban, Menu, Plus, X } from "lucide-react";
 
-type Section = "Dashboard" | "Customers" | "Projects" | "Knowledge Base";
+type Section = "Customers" | "Projects" | "Components";
 const customers = [
   { name: "Aroha Community Trust", contact: "Mereana Rangi · mereana@aroha.org.nz", projects: 2, status: "Active", initials: "AC", color: "#e8f1ff", ink: "#3565c8" },
   { name: "Foxton War Memorial Hall", contact: "Hall Committee · admin@foxtonhall.nz", projects: 1, status: "Active", initials: "FW", color: "#e8f7ef", ink: "#27835f" },
@@ -72,10 +72,10 @@ export default function Home() {
       listener.subscription.unsubscribe();
     };
   }, [router]);
-  const [section, setSection] = useState<Section>("Dashboard");
+  const [section, setSection] = useState<Section>("Customers");
   const [filter, setFilter] = useState("");
   const [recentProjects, setRecentProjects] = useState<{id:string;name:string;status:string;priority:string;customerName:string}[]>([]);
-  const nav = [{ label: "Dashboard" as Section, icon: Gauge }, { label: "Customers" as Section, icon: Building2 }, { label: "Projects" as Section, icon: FolderKanban }, { label: "Knowledge Base" as Section, icon: BookOpen }];
+  const nav = [{ label: "Customers" as Section, icon: Building2 }, { label: "Projects" as Section, icon: FolderKanban }, { label: "Components" as Section, icon: Boxes }];
   const signOut = async () => {
     const supabase = getSupabaseBrowserClient();
     await supabase?.auth.signOut();
@@ -92,25 +92,8 @@ export default function Home() {
     <div className="workspace">
       <header className="topbar"><div className="crumb">Workspace <ChevronRight size={14} style={{ verticalAlign: "middle", margin: "0 6px" }}/><strong>{section}</strong></div><div className="top-actions"><button className="icon-button" aria-label="Help"><CircleHelp size={17}/></button><button className="icon-button" aria-label="Activity"><Activity size={17}/></button><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ textAlign: "right", lineHeight: 1.25 }}><div style={{ fontSize: 13, fontWeight: 700, color: "#344154" }}>{userEmail}</div><div style={{ fontSize: 11, color: "#8993a2", textTransform: "capitalize" }}>{userRole.replace("_", " ")}</div></div><button className="secondary-button" onClick={signOut}>Sign out</button></div></div></header>
       <main className="main">
-        <div className="main-search"><GlobalSearch onSelect={hit => { const target: Section = hit.kind === "Customer" || (hit.kind === "Contact" && !hit.projectName) ? "Customers" : hit.kind === "Knowledge" ? "Knowledge Base" : "Projects"; setSection(target); setFilter(hit.projectName || hit.customerName || hit.title); }} /></div>
-        {section === "Dashboard" && <>
-          <div className="welcome-row dashboard-heading"><div><div className="eyebrow">YOUR WORKSPACE</div><h1 className="page-title">Welcome back</h1><p className="page-subtitle">Here’s what’s happening across your projects.</p></div><div className="dashboard-actions"><button className="primary-button" onClick={() => setSection("Customers")}><Plus size={17}/> New customer</button><button className="primary-button" onClick={() => setSection("Projects")}><Plus size={17}/> New project</button></div></div>
-          <div className="dashboard-section-label">WORKSPACE PULSE</div>
-          <div className="stats-grid dashboard-stats">
-            <div className="stat-card"><div className="stat-top"><span>Customers</span><span className="stat-icon stat-blue"><Building2 size={19}/></span></div><div className="stat-value">{projectCounts.customers}</div></div>
-            <div className="stat-card"><div className="stat-top"><span>Projects</span><span className="stat-icon stat-purple"><FolderKanban size={19}/></span></div><div className="stat-value">{projectCounts.total}</div></div>
-            <div className="stat-card"><div className="stat-top"><span>Active</span><span className="stat-icon stat-green"><Activity size={19}/></span></div><div className="stat-value">{projectCounts.active}</div></div>
-            <div className="stat-card"><div className="stat-top"><span>Priority</span><span className="stat-icon stat-amber"><ShieldCheck size={19}/></span></div><div className="stat-value">{projectCounts.priority}</div></div>
-          </div>
-          <div className="dashboard-section-label">RECENT PROJECTS</div>
-          <section className="panel dashboard-projects">
-            {recentProjects.length ? recentProjects.map(p => <button className="project-row project-row-button" key={p.id} onClick={() => { setSection("Projects"); setFilter(p.name); }}><div className="project-logo">{p.name.slice(0,2).toUpperCase()}</div><div className="project-row-copy"><div className="project-name">{p.name}</div><div className="project-customer">{p.customerName}</div></div><span className={`status ${p.status === "active" ? "active" : "review"}`}>{p.status.replace("_"," ")}</span><ChevronRight size={16} className="project-chevron"/></button>) : <div className="dashboard-empty"><FolderKanban size={25}/><div>No projects yet</div><button className="text-link" onClick={() => setSection("Projects")}>Create your first project</button></div>}
-          </section>
-          <TaskCards />
-        </>}
-        {section === "Customers" && <WorkspaceRecords section="Customers" filter={filter} />}
-        {section === "Projects" && <WorkspaceRecords section="Projects" filter={filter} />}
-        {section === "Knowledge Base" && <><PageHeading eyebrow="Shared knowledge" title="Knowledge Base" subtitle="Search and discover solutions across your accessible project information." action={<button className="primary-button"><Plus size={16}/> New article</button>}/><div className="search-panel"><div className="search-box"><Search size={18} color="#7d8ba0"/><input value={filter} onChange={e=>setFilter(e.target.value)} placeholder="Search articles, errors, procedures and solutions…"/><span className="search-hint">Search</span></div><div className="search-desc" style={{marginTop:10}}>Recommendations update as you type. Select an article to explore it.</div></div><div className="kb-grid">{articles.filter(a=>(a.title+a.desc+a.type).toLowerCase().includes(filter.toLowerCase())).map(a=><article className="kb-card" key={a.title}><div style={{display:"flex",alignItems:"center",gap:9,marginBottom:12}}><div className="solution-icon"><a.icon size={17}/></div><span className="status active">{a.type}</span></div><h3>{a.title}</h3><p>{a.desc}</p><div className="kb-meta"><span>{a.updated}</span><button className="text-link" onClick={()=>{setSection("Dashboard");}}>Find related <ChevronRight size={13}/></button></div></article>)}</div></>}
+        <div className="main-search"><GlobalSearch onSelect={hit => { const target: Section = hit.kind === "Customer" || (hit.kind === "Contact" && !hit.projectName) ? "Customers" : "Projects"; setSection(target); setFilter(hit.projectName || hit.customerName || hit.title); }} /></div>
+        <RelationshipWorkspace section={section} filter={filter} onNavigate={(next,id) => { setSection(next); setFilter(""); window.setTimeout(() => window.dispatchEvent(new CustomEvent("ekara-select-record",{detail:{kind:next,id}})),0); }} />
         <div className="footer-note">Ekara Central · Customer and project knowledge, connected.</div>
       </main>
     </div>
