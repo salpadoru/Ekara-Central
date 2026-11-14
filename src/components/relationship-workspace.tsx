@@ -27,7 +27,8 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
   ]);
   if(c.error)setError(c.error.message);else setCustomers(c.data??[]);
   if(p.error)setError(p.error.message);else setProjects((p.data??[]) as unknown as Project[]);
-  if(b.error)setError(b.error.message);else setComponents((b.data??[]) as unknown as Component[]);\n  if(l.error)setError(l.error.message);else setComponentLinks(l.data??[]);
+  if(b.error)setError(b.error.message);else setComponents((b.data??[]) as unknown as Component[]);
+  if(l.error)setError(l.error.message);else setComponentLinks(l.data??[]);
   setLoading(false);
  },[]);
  useEffect(()=>{void load()},[load]);
