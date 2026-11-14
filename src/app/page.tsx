@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import GlobalSearch from "@/components/global-search";
-import TaskCards from "@/components/task-cards";
 import RelationshipWorkspace from "@/components/relationship-workspace";
 import { Activity, Building2, Boxes, ChevronRight, CircleHelp, FolderKanban, Menu, Plus, X } from "lucide-react";
 
