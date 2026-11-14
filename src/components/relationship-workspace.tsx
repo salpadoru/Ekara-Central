@@ -29,7 +29,8 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
   if(b.error)setError(b.error.message);else setComponents((b.data??[]) as unknown as Component[]);
   setLoading(false);
  },[]);
- useEffect(()=>{void load()},[load]);\n useEffect(()=>{const handler=(event:Event)=>{const detail=(event as CustomEvent<{kind:Kind;id:string}>).detail;if(detail?.id)setSelected({kind:detail.kind,id:detail.id});};window.addEventListener("ekara-select-record",handler);return()=>window.removeEventListener("ekara-select-record",handler);},[]);
+ useEffect(()=>{void load()},[load]);
+ useEffect(()=>{const handler=(event:Event)=>{const detail=(event as CustomEvent<{kind:Kind;id:string}>).detail;if(detail?.id)setSelected({kind:detail.kind,id:detail.id});};window.addEventListener("ekara-select-record",handler);return()=>window.removeEventListener("ekara-select-record",handler);},[]);
  useEffect(()=>{setQuery(filter);setSelected(null)},[filter,section]);
  const chosenCustomer=selected?.kind==="Customers"?customers.find(x=>x.id===selected.id):null;
  const chosenProject=selected?.kind==="Projects"?projects.find(x=>x.id===selected.id):null;
@@ -70,7 +71,7 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
     <div style={{marginTop:28,borderTop:"1px solid #edf0f4",paddingTop:20}}><div style={{fontSize:16,fontWeight:750,color:"#344154",marginBottom:12}}>{chosenCustomer?"Projects":chosenProject?"Components":"Used by projects"}</div>
      {chosenCustomer&&<RelationList rows={linkedProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.project_type??p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/>}
      {chosenProject&&<RelationList rows={projectComponentRows.map(c=>({id:c.id,name:c.name,code:c.component_code,meta:c.component_type??c.vendor,kind:"Components"}))} onClick={id=>onNavigate("Components",id)}/>}
-     {chosenComponent&&<RelationList rows={detailProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.status,kind:"Projects"}))} onClick={id=>window.dispatchEvent(new CustomEvent("ekara-navigate",{detail:{section:"Projects",id}}))}/>}
+     {chosenComponent&&<RelationList rows={detailProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/>}
     </div>
    </>}
   </section>
