@@ -344,3 +344,34 @@ body{background:#f4f6fa;color:#17263b;font-size:15px}
 .ekara-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;padding-top:18px;border-top:1px solid #edf0f4}
 @media(max-width:850px){.sidebar{width:210px}.main{padding:22px 20px 40px}.directory-stats{grid-template-columns:1fr}.directory-heading{align-items:flex-start;flex-direction:column}}
 @media(max-width:640px){.sidebar{width:100%;min-height:auto}.app-shell{display:block}.main{padding:18px 14px 32px}.topbar{padding:0 16px}.directory-list-head{align-items:flex-start;flex-direction:column}.directory-record{padding:13px 14px}.directory-status{display:none}.ekara-modal{padding:18px}.top-actions{gap:6px}}
+
+
+/* Expandable relationship hierarchy */
+.ekara-tree-page{display:grid;gap:16px}
+.tree-page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:4px 0 5px}
+.tree-page-heading h1{font-size:29px;letter-spacing:-.7px;margin:6px 0;color:#1a2b43}
+.tree-page-heading p{font-size:14px;color:#718096;margin:0}
+.tree-summary{display:flex;align-items:center;gap:0;background:#fff;border:1px solid #e5eaf1;border-radius:12px;padding:13px 18px;flex-wrap:wrap}
+.tree-summary span{font-size:13px;color:#64748b;padding:2px 18px;border-right:1px solid #e8edf3}
+.tree-summary span:first-child{padding-left:0}.tree-summary span:last-child{border:0}
+.tree-browser{background:#fff;border:1px solid #e5eaf1;border-radius:15px;box-shadow:0 5px 20px rgba(24,43,68,.035);overflow:hidden}
+.tree-browser-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #edf0f4}
+.tree-browser-head>div{display:grid;gap:4px}.tree-browser-head strong{font-size:16px;color:#203149}.tree-browser-head small,.tree-browser-head>span{font-size:12px;color:#8290a3}
+.tree-list{padding:12px 18px 18px}
+.tree-record-wrap{position:relative}
+.tree-record{--tree-depth:0;display:flex;align-items:center;gap:9px;min-height:54px;padding:5px 12px 5px calc(12px + var(--tree-depth)*34px);border-radius:10px;position:relative}
+.tree-record:hover{background:#f7f9fc}.tree-record.is-selected{background:#edf4ff}
+.tree-record-main{display:flex;align-items:center;gap:12px;min-width:0;flex:1;border:0;background:transparent;text-align:left;padding:0;color:inherit}
+.tree-expand{width:23px;height:27px;display:grid;place-items:center;flex-shrink:0;border:0;background:transparent;color:#3c6fd0;padding:0}
+.tree-expand:hover{background:#e8efff;border-radius:7px}
+.tree-kind-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;background:#edf3ff;color:#376bc0}
+.tree-kind-icon svg{width:18px;height:18px}.tree-kind-icon.projects{background:#f0edff;color:#7660c6}.tree-kind-icon.components{background:#eaf7f1;color:#368466}
+.tree-record-text{display:grid;gap:3px;min-width:0}.tree-record-text strong{font-size:14px;font-weight:700;color:#26374e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tree-record-text small{font-size:12px;color:#8491a3}
+.tree-kind-label{font-size:11px;color:#8b98a9;background:#f4f6f9;border-radius:20px;padding:5px 9px}
+.tree-more{width:28px;height:28px;display:grid;place-items:center;background:transparent;border:0;color:#91a0b2;border-radius:7px}
+.tree-more:hover{background:#e9eff8;color:#3a65b4}
+.tree-children{margin-left:23px;border-left:1px solid #e7edf4}
+.tree-unassigned{margin:15px 0 0;padding-top:14px;border-top:1px solid #edf0f4}
+.tree-group-title{padding:5px 12px 8px;color:#8996a8;font-size:11px;font-weight:750;letter-spacing:.7px;text-transform:uppercase}
+.directory-detail{margin-top:2px}
+@media(max-width:640px){.tree-page-heading{align-items:flex-start;flex-direction:column}.tree-summary{gap:8px}.tree-summary span{padding:2px 10px;font-size:12px}.tree-record{padding-left:calc(6px + var(--tree-depth)*18px);gap:5px}.tree-kind-icon{width:32px;height:32px}.tree-kind-label{display:none}.tree-list{padding:8px}}
