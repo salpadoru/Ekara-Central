@@ -19,7 +19,7 @@ begin
 end $$;
 
 create or replace function public.assign_customer_code()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql security definer set search_path = '' as $
 begin
   if new.customer_code is null or btrim(new.customer_code) = '' then
     new.customer_code := 'CUS-' || lpad(nextval('public.customer_code_seq')::text,5,'0');
@@ -28,7 +28,7 @@ begin
 end $$;
 
 create or replace function public.assign_project_code()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql security definer set search_path = '' as $
 begin
   if new.project_code is null or btrim(new.project_code) = '' then
     new.project_code := 'PRJ-' || lpad(nextval('public.project_code_seq')::text,5,'0');
