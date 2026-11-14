@@ -236,3 +236,54 @@ body{background:var(--paper);color:var(--ink)}
   .project-chevron{width:14px}
   .footer-note{margin-top:24px}
 }
+
+
+/* Consistent readable type scale — body text never drops below breadcrumb size. */
+body{font-size:16px;line-height:1.55}
+.crumb,.crumb strong{font-size:16px}
+.nav-item{font-size:16px}
+.brand-name{font-size:20px}
+.brand-sub{font-size:16px}
+.eyebrow,.dashboard-section-label{font-size:16px;letter-spacing:1.1px}
+.page-title{font-size:36px}
+.page-subtitle{font-size:18px}
+.primary-button,.secondary-button{font-size:16px}
+.global-search-input input,.main-search .global-search-input input{font-size:18px}
+.global-search-input kbd,.main-search .global-search-input kbd{font-size:14px}
+.global-search-label{font-size:16px;letter-spacing:.5px}
+.global-search-hit{font-size:16px;padding:13px 10px}
+.global-search-copy strong{font-size:17px}
+.global-search-copy small{font-size:16px}
+.global-search-message{font-size:16px}
+.global-search-foot{font-size:15px}
+.dashboard-stats .stat-top{font-size:16px}
+.dashboard-stats .stat-value{font-size:34px}
+.dashboard-projects .panel-title{font-size:20px}
+.project-row-copy .project-name{font-size:17px}
+.project-row-copy .project-customer{font-size:16px}
+.project-row-button .status{font-size:15px}
+.dashboard-empty div{font-size:18px}
+.dashboard-empty .text-link,.text-link{font-size:16px}
+.data-table th{font-size:15px}
+.data-table td,.table-primary{font-size:16px}
+.table-secondary{font-size:15px}
+.kb-card h3{font-size:18px}
+.kb-card p{font-size:16px}
+.kb-meta{font-size:15px}
+.search-small input{font-size:16px}
+.footer-note{font-size:15px}
+@media(max-width:720px){
+  .crumb,.crumb strong{font-size:16px}
+  .brand-name{font-size:20px}
+  .nav-item{font-size:16px}
+  .eyebrow,.dashboard-section-label{font-size:15px}
+  .page-title{font-size:32px}
+  .page-subtitle{font-size:17px}
+  .dashboard-actions .primary-button{font-size:15px}
+  .dashboard-stats .stat-top{font-size:16px}
+  .dashboard-stats .stat-value{font-size:30px}
+  .project-row-copy .project-name{font-size:16px}
+  .project-row-copy .project-customer{font-size:15px}
+  .project-row-button .status{font-size:14px}
+  .global-search-input input,.main-search .global-search-input input{font-size:16px}
+}
