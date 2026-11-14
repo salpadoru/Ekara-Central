@@ -4,7 +4,7 @@ create sequence if not exists public.component_code_seq;
 do $$
 declare n bigint;
 begin
-  select coalesce(max(nullif(regexp_replace(component_code, '\\D', '', 'g'), '')::bigint),0)
+  select coalesce(max(nullif(regexp_replace(component_code, '[^0-9]', '', 'g'), '')::bigint),0)
     into n from public.components;
   if n = 0 then perform setval('public.component_code_seq',1,false);
   else perform setval('public.component_code_seq',n,true); end if;
