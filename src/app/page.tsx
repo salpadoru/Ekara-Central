@@ -15,7 +15,6 @@ export default function Home() {
   const [userEmail, setUserEmail] = useState("");
   const [userRole, setUserRole] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [projectCounts, setProjectCounts] = useState({ total: 0, active: 0, priority: 0, customers: 0 });
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
@@ -28,13 +27,6 @@ export default function Home() {
       const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
       if (!active) return;
       setUserRole(data?.role ?? "member");
-      const [{ data: projectRows }, { count: customerCount }] = await Promise.all([
-        supabase.from("projects").select("id,name,status,priority,customers(name),updated_at").order("updated_at", { ascending: false }),
-        supabase.from("customers").select("id", { count: "exact", head: true }),
-      ]);
-      if (!active) return;
-      setRecentProjects((projectRows ?? []).slice(0,5).map((p: any) => ({ id:p.id, name:p.name, status:p.status, priority:p.priority ?? "normal", customerName: Array.isArray(p.customers) ? p.customers[0]?.name ?? "" : p.customers?.name ?? "" })));
-      setProjectCounts({ total: projectRows?.length ?? 0, active: projectRows?.filter((p: any) => p.status === "active").length ?? 0, priority: projectRows?.filter((p: any) => ["critical","high"].includes(p.priority)).length ?? 0, customers: customerCount ?? 0 });
       setAuthReady(true);
     };
     supabase.auth.getSession().then(({ data }) => {
@@ -57,7 +49,6 @@ export default function Home() {
   }, [router]);
   const [section, setSection] = useState<Section>("Customers");
   const [filter, setFilter] = useState("");
-  const [recentProjects, setRecentProjects] = useState<{id:string;name:string;status:string;priority:string;customerName:string}[]>([]);
   const nav = [{ label: "Customers" as Section, icon: Building2 }, { label: "Projects" as Section, icon: FolderKanban }, { label: "Components" as Section, icon: Boxes }];
   const signOut = async () => {
     const supabase = getSupabaseBrowserClient();
