@@ -72,6 +72,3 @@ export default function Home() {
     </div>
   </div>;
 }
-function Stat({icon:Icon,label,value,foot,tint,ink}:{icon:typeof Gauge;label:string;value:string;foot:React.ReactNode;tint:string;ink:string}){return <div className="stat-card"><div className="stat-top"><span>{label}</span><span className="stat-icon" style={{background:tint,color:ink}}><Icon size={17}/></span></div><div className="stat-value">{value}</div><div className="stat-foot">{foot}</div></div>}
-function PageHeading({eyebrow,title,subtitle,action}:{eyebrow:string;title:string;subtitle:string;action:React.ReactNode}){return <div className="welcome-row"><div><div className="eyebrow">{eyebrow}</div><h1 className="page-title">{title}</h1><p className="page-subtitle">{subtitle}</p></div>{action}</div>}
-function Toolbar({value,onChange,placeholder}:{value:string;onChange:(v:string)=>void;placeholder:string}){return <div className="page-toolbar"><label className="search-small"><Search size={16} color="#8994a4"/><input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/></label><button className="secondary-button"><FileText size={15}/> Export</button></div>}
