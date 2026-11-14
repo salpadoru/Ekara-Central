@@ -12,6 +12,7 @@ type SearchHit = {
   detail: string;
   customerName?: string;
   projectName?: string;
+  projectId?: string;
 };
 
 const icons = {
@@ -29,6 +30,8 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
+  const [taskMessage, setTaskMessage] = useState("");
+  const [creatingTask, setCreatingTask] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -100,9 +103,9 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
           ...(projects.data ?? []).map(x => ({ id: x.id, kind: "Project" as const, title: x.name, detail: "Project workspace", ...hierarchy(x.id, x.customer_id) })),
           ...(projectContacts.data ?? []).map(x => ({ id: x.id, kind: "Contact" as const, title: x.full_name, detail: x.role_title || x.email || "Project contact", ...hierarchy(x.project_id) })),
           ...(customerContacts.data ?? []).map(x => ({ id: x.id, kind: "Contact" as const, title: x.full_name, detail: x.role_title || x.email || "Customer contact", ...hierarchy(null, x.customer_id) })),
-          ...(documents.data ?? []).map(x => ({ id: x.id, kind: "Document" as const, title: x.title, detail: x.description || "Project document", ...hierarchy(x.project_id) })),
+          ...(documents.data ?? []).map(x => ({ id: x.id, projectId: x.project_id, kind: "Document" as const, title: x.title, detail: x.description || "Project document", ...hierarchy(x.project_id) })),
           ...(components.data ?? []).map(x => ({ id: x.id, kind: "Component" as const, title: x.name, detail: [x.vendor, x.component_type].filter(Boolean).join(" · ") || "Project component", ...hierarchy(x.project_id) })),
-          ...(knowledge.data ?? []).map(x => ({ id: x.id, kind: "Knowledge" as const, title: x.title, detail: x.summary || x.kind, ...hierarchy(x.project_id, x.customer_id) })),
+          ...(knowledge.data ?? []).map(x => ({ id: x.id, projectId: x.project_id ?? undefined, kind: "Knowledge" as const, title: x.title, detail: x.summary || x.kind, ...hierarchy(x.project_id, x.customer_id) })),
         ];
         if (!cancelled) setHits(result);
       } catch (err) {
@@ -114,6 +117,19 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
     return () => { cancelled = true; window.clearTimeout(timer); };
   }, [term]);
 
+  const createTaskFromHit = async (hit: SearchHit) => {
+    if (!hit.projectId) { setTaskMessage("This record is not linked to a project, so a project task cannot be created."); return; }
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
+    setCreatingTask(hit.id); setTaskMessage("");
+    const sourceType = hit.kind === "Knowledge" ? "knowledge_article" : "project_document";
+    const { data: existing, error: lookupError } = await supabase.from("project_tasks").select("id").eq("project_id", hit.projectId).eq("source_type", sourceType).eq("source_id", hit.id).maybeSingle();
+    if (lookupError) { setTaskMessage(lookupError.message); setCreatingTask(null); return; }
+    if (existing) { setTaskMessage("A task already exists for this item."); setCreatingTask(null); return; }
+    const { error: insertError } = await supabase.from("project_tasks").insert({ project_id: hit.projectId, title: hit.title, description: hit.detail, task_type: hit.kind === "Knowledge" ? "requirement" : "follow_up", source_type: sourceType, source_id: hit.id, source_label: hit.kind === "Knowledge" ? "Knowledge / requirement search" : "Document search", priority: "normal", status: "open" });
+    setTaskMessage(insertError ? insertError.message : "Task card created. It is now on the dashboard.");
+    setCreatingTask(null);
+  };
   const grouped = (["Customer", "Project", "Contact", "Document", "Component", "Knowledge"] as SearchKind[])
     .map(kind => ({ kind, items: hits.filter(hit => hit.kind === kind) }))
     .filter(group => group.items.length > 0);
@@ -132,12 +148,16 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
         <div className="global-search-label">{group.kind}s</div>
         {group.items.map(hit => {
           const Icon = icons[hit.kind];
-          return <button key={`${hit.kind}-${hit.id}`} className="global-search-hit" onClick={() => { onSelect(hit); setOpen(false); setTerm(""); }}>
-            <span className="global-search-icon"><Icon size={17} /></span>
-            <span className="global-search-copy"><strong>{hit.title}</strong><small>{[hit.customerName, hit.projectName, hit.detail].filter(Boolean).join(" · ")}</small></span>
-          </button>;
+          return <div key={`${hit.kind}-${hit.id}`} style={{display:"flex",alignItems:"center",gap:8}}>
+            <button className="global-search-hit" style={{flex:1,minWidth:0}} onClick={() => { onSelect(hit); setOpen(false); setTerm(""); }}>
+              <span className="global-search-icon"><Icon size={17} /></span>
+              <span className="global-search-copy"><strong>{hit.title}</strong><small>{[hit.customerName, hit.projectName, hit.detail].filter(Boolean).join(" · ")}</small></span>
+            </button>
+            {(hit.kind === "Knowledge" || hit.kind === "Document") && hit.projectId && <button className="secondary-button" style={{whiteSpace:"nowrap",fontSize:12,padding:"7px 9px"}} disabled={creatingTask === hit.id} onClick={() => void createTaskFromHit(hit)}>{creatingTask === hit.id ? "Adding…" : "Create task"}</button>}
+          </div>;
         })}
       </section>)}
+      {taskMessage && <div className="global-search-message">{taskMessage}</div>}
       <div className="global-search-foot">Results are limited to information you have permission to access.</div>
     </div>}
   </div>;
