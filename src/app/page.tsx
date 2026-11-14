@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import GlobalSearch from "@/components/global-search";
 import RelationshipWorkspace from "@/components/relationship-workspace";
-import { Activity, Building2, Boxes, ChevronRight, CircleHelp, FolderKanban, Menu, Plus, X } from "lucide-react";
+import { Activity, Building2, Boxes, ChevronRight, CircleHelp, FolderKanban, Menu, X } from "lucide-react";
 
 type Section = "Customers" | "Projects" | "Components";
 export default function Home() {
