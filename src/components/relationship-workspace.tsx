@@ -110,8 +110,8 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
  const title=chosenCustomer?.name??chosenProject?.name??chosenComponent?.name??section;
  const customerForProject=chosenProject?.customer_id?customers.find(c=>c.id===chosenProject.customer_id):null;
  const customerForComponent=chosenComponent?.customer_id?customers.find(c=>c.id===chosenComponent.customer_id):null;
- const toggle=(key:string)=>setExpanded(v=>({...v,[key]:!(v[key]??true)}));
- const isOpen=(key:string)=>expanded[key]??true;
+ const toggle=(key:string)=>setExpanded(v=>({...v,[key]:!(v[key]??false)}));
+ const isOpen=(key:string)=>expanded[key]??false;
  const linkedToProject=(projectId:string)=>componentLinks.filter(x=>x.project_id===projectId).map(x=>components.find(c=>c.id===x.component_id)).filter(Boolean) as Component[];
  const projectsForCustomer=(customerId:string)=>projects.filter(p=>p.customer_id===customerId);
  const componentsForCustomer=(customerId:string)=>components.filter(c=>c.customer_id===customerId&&!componentLinks.some(l=>l.component_id===c.id));
