@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import GlobalSearch from "@/components/global-search";
-import { Activity, BookOpen, Building2, ChevronRight, CircleHelp, Code2, FileText, FolderKanban, Gauge, HardDrive, Plus, Search, Server, ShieldCheck } from "lucide-react";
+import { Activity, BookOpen, Building2, ChevronRight, CircleHelp, Code2, FileText, FolderKanban, Gauge, HardDrive, Menu, Plus, Search, Server, ShieldCheck, X } from "lucide-react";
 
 type Section = "Dashboard" | "Customers" | "Projects" | "Knowledge Base";
 const customers = [
@@ -29,6 +29,8 @@ export default function Home() {
   const [authReady, setAuthReady] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [projectCounts, setProjectCounts] = useState({ total: 0, active: 0, priority: 0, customers: 0 });
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
     if (!supabase) {
@@ -41,9 +43,13 @@ export default function Home() {
       const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
       if (!active) return;
       setUserRole(data?.role ?? "member");
-      const { data: projectRows } = await supabase.from("projects").select("id,name,status,priority,customers(name)").order("updated_at", { ascending: false }).limit(5);
+      const [{ data: projectRows }, { count: customerCount }] = await Promise.all([
+        supabase.from("projects").select("id,name,status,priority,customers(name),updated_at").order("updated_at", { ascending: false }),
+        supabase.from("customers").select("id", { count: "exact", head: true }),
+      ]);
       if (!active) return;
-      setRecentProjects((projectRows ?? []).map((p: any) => ({ id:p.id, name:p.name, status:p.status, priority:p.priority ?? "normal", customerName: Array.isArray(p.customers) ? p.customers[0]?.name ?? "" : p.customers?.name ?? "" })));
+      setRecentProjects((projectRows ?? []).slice(0,5).map((p: any) => ({ id:p.id, name:p.name, status:p.status, priority:p.priority ?? "normal", customerName: Array.isArray(p.customers) ? p.customers[0]?.name ?? "" : p.customers?.name ?? "" })));
+      setProjectCounts({ total: projectRows?.length ?? 0, active: projectRows?.filter((p: any) => p.status === "active").length ?? 0, priority: projectRows?.filter((p: any) => ["critical","high"].includes(p.priority)).length ?? 0, customers: customerCount ?? 0 });
       setAuthReady(true);
     };
     supabase.auth.getSession().then(({ data }) => {
@@ -77,8 +83,8 @@ export default function Home() {
   return <div className="app-shell">
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark">E</div><div><div className="brand-name">Ekara Central</div><div className="brand-sub">Project Knowledge Hub</div></div></div>
-      
-      {nav.map(item => <button key={item.label} className={`nav-item ${section === item.label ? "active" : ""}`} onClick={() => { setSection(item.label); }}><item.icon /><span>{item.label}</span></button>)}
+      <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(v => !v)} aria-label="Toggle menu">{mobileMenuOpen ? <X size={21}/> : <Menu size={21}/>}<span>Menu</span></button>
+      <nav className={`primary-nav ${mobileMenuOpen ? "open" : ""}`}>{nav.map(item => <button key={item.label} className={`nav-item ${section === item.label ? "active" : ""}`} onClick={() => { setSection(item.label); setMobileMenuOpen(false); }}><item.icon /><span>{item.label}</span></button>)}</nav>
 
     </aside>
     <div className="workspace">
@@ -86,8 +92,16 @@ export default function Home() {
       <main className="main">
         <div className="main-search"><GlobalSearch onSelect={hit => { const target: Section = hit.kind === "Customer" || (hit.kind === "Contact" && !hit.projectName) ? "Customers" : hit.kind === "Knowledge" ? "Knowledge Base" : "Projects"; setSection(target); setFilter(hit.projectName || hit.customerName || hit.title); }} /></div>
         {section === "Dashboard" && <>
-          <div className="welcome-row dashboard-heading"><div><h1 className="page-title">Overview</h1></div><div className="dashboard-actions"><button className="primary-button" onClick={() => setSection("Customers")}><Plus size={17}/> Customer</button><button className="secondary-button" onClick={() => setSection("Projects")}><Plus size={17}/> Project</button></div></div>
-          <section className="panel dashboard-projects"><div className="panel-header"><div><h2 className="panel-title">Projects</h2></div><button className="text-link" onClick={() => setSection("Projects")}>View all <ChevronRight size={13}/></button></div>
+          <div className="welcome-row dashboard-heading"><div><div className="eyebrow">YOUR WORKSPACE</div><h1 className="page-title">Welcome back</h1><p className="page-subtitle">Here’s what’s happening across your projects.</p></div><div className="dashboard-actions"><button className="primary-button" onClick={() => setSection("Customers")}><Plus size={17}/> New customer</button><button className="primary-button" onClick={() => setSection("Projects")}><Plus size={17}/> New project</button></div></div>
+          <div className="dashboard-section-label">WORKSPACE PULSE</div>
+          <div className="stats-grid dashboard-stats">
+            <div className="stat-card"><div className="stat-top"><span>Customers</span><span className="stat-icon stat-blue"><Building2 size={19}/></span></div><div className="stat-value">{projectCounts.customers}</div></div>
+            <div className="stat-card"><div className="stat-top"><span>Projects</span><span className="stat-icon stat-purple"><FolderKanban size={19}/></span></div><div className="stat-value">{projectCounts.total}</div></div>
+            <div className="stat-card"><div className="stat-top"><span>Active</span><span className="stat-icon stat-green"><Activity size={19}/></span></div><div className="stat-value">{projectCounts.active}</div></div>
+            <div className="stat-card"><div className="stat-top"><span>Priority</span><span className="stat-icon stat-amber"><ShieldCheck size={19}/></span></div><div className="stat-value">{projectCounts.priority}</div></div>
+          </div>
+          <div className="dashboard-section-label">RECENT PROJECTS</div>
+          <section className="panel dashboard-projects">
             {recentProjects.length ? recentProjects.map(p => <button className="project-row project-row-button" key={p.id} onClick={() => { setSection("Projects"); setFilter(p.name); }}><div className="project-logo">{p.name.slice(0,2).toUpperCase()}</div><div className="project-row-copy"><div className="project-name">{p.name}</div><div className="project-customer">{p.customerName}</div></div><span className={`status ${p.status === "active" ? "active" : "review"}`}>{p.status.replace("_"," ")}</span><ChevronRight size={16} className="project-chevron"/></button>) : <div className="dashboard-empty"><FolderKanban size={25}/><div>No projects yet</div><button className="text-link" onClick={() => setSection("Projects")}>Create your first project</button></div>}
           </section>
         </>}
