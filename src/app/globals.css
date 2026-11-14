@@ -143,3 +143,96 @@ body{font-size:18px;line-height:1.55}
 .panel{box-shadow:0 2px 12px rgba(24,34,48,.025)}
 @media(max-width:1100px){.main{padding:28px 30px 48px}}
 @media(max-width:720px){.sidebar{width:66px;padding:18px 8px}.brand{padding:0 6px 28px}.brand-name,.brand-sub,.nav-item span{display:none}.nav-item{justify-content:center;padding:12px 0}.topbar{height:58px;padding:0 14px}.main{padding:20px 16px 36px}.main-search{margin-bottom:26px}.dashboard-heading{align-items:flex-start}.dashboard-actions{width:100%}.dashboard-actions button{flex:1;justify-content:center}.dashboard-projects{padding:17px}.page-title{font-size:29px}}
+
+
+/* Ekara dashboard — visual language adapted from the supplied Frindly reference */
+:root{--paper:#f7f9fc;--ink:#14233b;--muted:#74839a;--line:#e1e8f0;--blue:#1675df;--shadow:0 8px 24px rgba(19,45,78,.045)}
+body{background:var(--paper);color:var(--ink)}
+.sidebar{background:#10243d;color:#fff;border:0;width:248px;padding:26px 16px}
+.brand{padding:0 10px 34px}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:#1675df;box-shadow:none;font-size:19px}
+.brand-name{color:#fff;font-size:19px;letter-spacing:-.4px}
+.brand-sub{display:block;color:#a9b9cc;font-size:12px}
+.primary-nav{display:flex;flex-direction:column;gap:6px}
+.sidebar .nav-item{color:#c0ccda;font-size:15px;min-height:46px;border-radius:9px}
+.sidebar .nav-item:hover{background:#1b3656;color:#fff}
+.sidebar .nav-item.active{background:#1b4d82;color:#fff}
+.mobile-menu-toggle{display:none}
+.workspace{background:var(--paper)}
+.topbar{height:62px;background:#fff;padding:0 34px;border-color:#e9edf3}
+.top-actions .icon-button{display:none}
+.main{max-width:1440px;padding:32px 46px 60px}
+.main-search{max-width:100%;margin:0 0 30px}
+.main-search .global-search-input{height:58px;border-radius:11px;border:1px solid #dce5ef;background:#fff;box-shadow:0 3px 12px rgba(18,44,77,.035);padding:0 18px}
+.main-search .global-search-input input{font-size:17px}
+.dashboard-heading{align-items:flex-start;margin-bottom:30px}
+.eyebrow,.dashboard-section-label{color:#2874b9;font-size:12px;font-weight:800;letter-spacing:1.7px;margin-bottom:9px}
+.page-title{font-size:34px;line-height:1.2;letter-spacing:-1px;color:#14233b}
+.page-subtitle{font-size:16px;color:#77869b;margin-top:7px}
+.dashboard-actions{display:flex;gap:10px;flex-wrap:wrap}
+.dashboard-actions .primary-button{background:#1477df;border-radius:10px;padding:13px 17px;box-shadow:0 5px 13px rgba(20,119,223,.16);font-size:14px}
+.dashboard-actions .primary-button:hover{background:#0868cc}
+.dashboard-section-label{margin:0 0 13px}
+.dashboard-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:28px}
+.dashboard-stats .stat-card{min-height:122px;border:1px solid #dfe7f0;border-radius:15px;box-shadow:0 4px 16px rgba(18,44,77,.035);padding:18px 19px}
+.dashboard-stats .stat-top{font-size:14px;color:#718096}
+.dashboard-stats .stat-value{font-size:30px;color:#172a45;margin-top:10px}
+.dashboard-stats .stat-icon{width:40px;height:40px;border-radius:50%}
+.stat-blue{background:#e8f1ff;color:#2475d4}
+.stat-purple{background:#f1eaff;color:#8757d6}
+.stat-green{background:#e7f7ef;color:#27996a}
+.stat-amber{background:#fff2df;color:#d18a26}
+.dashboard-projects{padding:8px 22px;border:1px solid #dfe7f0;border-radius:15px;box-shadow:0 4px 16px rgba(18,44,77,.035)}
+.dashboard-projects .project-row{padding:17px 4px;border-color:#edf1f5}
+.project-row-button:hover{background:#f8fbff}
+.project-row-button .project-logo{width:42px;height:42px;border-radius:50%;background:#eaf2fd;color:#2673ca}
+.project-row-copy .project-name{font-size:15px;color:#1b2c45}
+.project-row-copy .project-customer{font-size:13px;color:#8290a3}
+.project-row-button .status{border-radius:18px;font-size:12px}
+.project-chevron{color:#9baabd}
+.dashboard-empty{min-height:180px}
+.panel{border-color:#dfe7f0;border-radius:15px;box-shadow:0 4px 16px rgba(18,44,77,.035)}
+.primary-button{background:#1477df}
+.mobile-menu-toggle{border:1px solid #56708e;background:#1a3553;color:white;border-radius:9px;padding:9px 13px;align-items:center;gap:8px;font-weight:650}
+@media(max-width:900px){.main{padding:26px 24px 48px}.dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+  .app-shell{display:flex;flex-direction:column;min-height:100vh}
+  .sidebar{width:100%;height:78px;min-height:78px;padding:0 22px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;position:relative;z-index:40;background:#10243d}
+  .brand{padding:0;gap:10px}
+  .brand-mark{width:39px;height:39px}
+  .brand-name{font-size:19px}
+  .brand-sub{display:none}
+  .mobile-menu-toggle{display:flex}
+  .primary-nav{display:none;position:absolute;top:78px;left:0;right:0;padding:10px 14px 15px;background:#10243d;box-shadow:0 12px 22px rgba(12,31,54,.18);z-index:50}
+  .primary-nav.open{display:flex}
+  .sidebar .nav-item{width:100%;justify-content:flex-start;padding:12px 14px}
+  .sidebar .nav-item span{display:inline}
+  .workspace{width:100%;min-width:0}
+  .topbar{height:42px;padding:0 20px;justify-content:flex-start}
+  .crumb{font-size:12px}
+  .top-actions{display:none}
+  .main{padding:19px 18px 38px}
+  .main-search{margin-bottom:26px}
+  .main-search .global-search-input{height:54px;padding:0 14px}
+  .main-search .global-search-input input{font-size:15px}
+  .dashboard-heading{display:block;margin-bottom:23px}
+  .eyebrow,.dashboard-section-label{font-size:11px;letter-spacing:1.6px}
+  .page-title{font-size:29px}
+  .page-subtitle{font-size:15px;line-height:1.45}
+  .dashboard-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}
+  .dashboard-actions .primary-button{min-height:52px;justify-content:center;padding:10px 8px;font-size:13px;white-space:nowrap}
+  .dashboard-section-label{margin-bottom:11px}
+  .dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:25px}
+  .dashboard-stats .stat-card{min-height:116px;padding:14px 15px;border-radius:14px}
+  .dashboard-stats .stat-top{font-size:13px;gap:6px}
+  .dashboard-stats .stat-icon{width:35px;height:35px}
+  .dashboard-stats .stat-value{font-size:27px;margin-top:9px}
+  .dashboard-projects{padding:5px 14px;border-radius:14px}
+  .dashboard-projects .project-row{gap:10px;padding:14px 0}
+  .project-row-button .project-logo{width:38px;height:38px;font-size:11px}
+  .project-row-copy .project-name{font-size:14px}
+  .project-row-copy .project-customer{font-size:12px}
+  .project-row-button .status{font-size:10px;padding:5px 7px}
+  .project-chevron{width:14px}
+  .footer-note{margin-top:24px}
+}
