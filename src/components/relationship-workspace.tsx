@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { Plus, Pencil, Building2, FolderKanban, Boxes, ChevronRight, ChevronDown, Link2, X, CirclePlus, Settings, Paperclip } from "lucide-react";
+import { Plus, Minus, Pencil, Building2, FolderKanban, Boxes, ChevronRight, ChevronDown, Link2, X, CirclePlus, Settings, Paperclip } from "lucide-react";
 
 type Customer={id:string;name:string;customer_code:string|null;email:string|null;website_url:string|null;status:string};
 type Project={id:string;name:string;project_code:string|null;customer_id:string|null;project_type:string|null;status:string;priority:string;customers?:{name:string}|{name:string}[]|null};
