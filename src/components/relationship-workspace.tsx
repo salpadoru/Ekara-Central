@@ -8,11 +8,11 @@ type Customer={id:string;name:string;customer_code:string|null;email:string|null
 type Project={id:string;name:string;project_code:string|null;customer_id:string|null;project_type:string|null;status:string;priority:string;customers?:{name:string}|{name:string}[]|null};
 type Component={id:string;name:string;component_code:string|null;customer_id:string|null;component_type:string|null;vendor:string|null;status:string;hosting_provider:string|null;production_url:string|null;repository_url:string|null;domain_name:string|null;customers?:{name:string}|{name:string}[]|null};
 type Kind="Customers"|"Projects"|"Components";
-type Props={section:Kind;filter:string};
+type Props={section:Kind;filter:string;onNavigate:(section:Kind,id:string)=>void};
 const field:React.CSSProperties={display:"grid",gap:5,fontSize:13,fontWeight:650,color:"#526176"};
 const input:React.CSSProperties={width:"100%",padding:"10px 12px",border:"1px solid #dce3ec",borderRadius:9,fontSize:15,color:"#263449",background:"#fff"};
 
-export default function RelationshipWorkspace({section,filter}:Props){
+export default function RelationshipWorkspace({section,filter,onNavigate}:Props){
  const [customers,setCustomers]=useState<Customer[]>([]),[projects,setProjects]=useState<Project[]>([]),[components,setComponents]=useState<Component[]>([]);
  const [selected,setSelected]=useState<{kind:Kind;id:string}|null>(null),[query,setQuery]=useState(filter),[loading,setLoading]=useState(true),[modal,setModal]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState("");
  const [customerForm,setCustomerForm]=useState({name:"",website_url:"",email:"",phone:"",address:""});
@@ -29,7 +29,7 @@ export default function RelationshipWorkspace({section,filter}:Props){
   if(b.error)setError(b.error.message);else setComponents((b.data??[]) as unknown as Component[]);
   setLoading(false);
  },[]);
- useEffect(()=>{void load()},[load]);
+ useEffect(()=>{void load()},[load]);\n useEffect(()=>{const handler=(event:Event)=>{const detail=(event as CustomEvent<{kind:Kind;id:string}>).detail;if(detail?.id)setSelected({kind:detail.kind,id:detail.id});};window.addEventListener("ekara-select-record",handler);return()=>window.removeEventListener("ekara-select-record",handler);},[]);
  useEffect(()=>{setQuery(filter);setSelected(null)},[filter,section]);
  const chosenCustomer=selected?.kind==="Customers"?customers.find(x=>x.id===selected.id):null;
  const chosenProject=selected?.kind==="Projects"?projects.find(x=>x.id===selected.id):null;
@@ -44,7 +44,7 @@ export default function RelationshipWorkspace({section,filter}:Props){
  const save=async(e:React.FormEvent)=>{e.preventDefault();const db=getSupabaseBrowserClient();if(!db)return;setSaving(true);setError("");let failure:string|null=null;
   if(section==="Customers"){const {data:user}=await db.auth.getUser();const {error:e1}=await db.from("customers").insert({...customerForm,created_by:user.user?.id});failure=e1?.message??null;}
   if(section==="Projects"){if(!projectForm.name.trim()){setError("Project Name is required.");setSaving(false);return;}const {data:user}=await db.auth.getUser();const {error:e1}=await db.from("projects").insert({name:projectForm.name.trim(),customer_id:projectForm.customer_id||null,project_type:projectForm.project_type||null,status:projectForm.status,priority:projectForm.priority,summary:projectForm.summary||null,production_url:projectForm.production_url||null,repository_url:projectForm.repository_url||null,created_by:user.user?.id});failure=e1?.message??null;}
-  if(section==="Components"){if(!componentForm.name.trim()){setError("Component Name is required.");setSaving(false);return;}const {data:user}=await db.auth.getUser();const {data:created,error:e1}=await db.from("components").insert({...componentForm,customer_id:componentForm.customer_id||null,domain_expiry_date:componentForm.domain_expiry_date||null,project_id:undefined,created_by:user.user?.id}).select("id").single();failure=e1?.message??null;if(!failure&&componentForm.project_id){const {error:e2}=await db.from("project_component_links").insert({project_id:componentForm.project_id,component_id:created.id});failure=e2?.message??null;}}
+  if(section==="Components"){if(!componentForm.name.trim()){setError("Component Name is required.");setSaving(false);return;}const {data:user}=await db.auth.getUser();const {data:created,error:e1}=await db.from("components").insert({...componentForm,customer_id:componentForm.customer_id||null,domain_expiry_date:componentForm.domain_expiry_date||null,created_by:user.user?.id}).select("id").single();failure=e1?.message??null;if(!failure&&componentForm.project_id){const {error:e2}=await db.from("project_component_links").insert({project_id:componentForm.project_id,component_id:created.id});failure=e2?.message??null;}}
   if(failure)setError(failure);else{setModal(false);setCustomerForm({name:"",website_url:"",email:"",phone:"",address:""});setProjectForm({name:"",customer_id:"",project_type:"",status:"planning",priority:"normal",summary:"",production_url:"",repository_url:""});setComponentForm({name:"",customer_id:"",project_id:"",component_type:"",vendor:"",status:"active",hosting_provider:"",hosting_plan:"",server_name:"",server_type:"",operating_system:"",hosting_region:"",production_url:"",management_url:"",domain_name:"",domain_registrar:"",domain_expiry_date:"",dns_provider:"",source_control_platform:"",repository_url:"",documentation_url:"",notes:""});await load();}
   setSaving(false);
  };
@@ -68,8 +68,8 @@ export default function RelationshipWorkspace({section,filter}:Props){
      {chosenComponent&&<><Info label="Customer" value={customerForComponent?.name??"Shared / independent"}/><Info label="Type" value={chosenComponent.component_type}/><Info label="Vendor" value={chosenComponent.vendor}/><Info label="Hosting" value={chosenComponent.hosting_provider}/><Info label="Production URL" value={chosenComponent.production_url}/><Info label="Repository" value={chosenComponent.repository_url}/><Info label="Domain" value={chosenComponent.domain_name}/></>}
     </div>
     <div style={{marginTop:28,borderTop:"1px solid #edf0f4",paddingTop:20}}><div style={{fontSize:16,fontWeight:750,color:"#344154",marginBottom:12}}>{chosenCustomer?"Projects":chosenProject?"Components":"Used by projects"}</div>
-     {chosenCustomer&&<RelationList rows={linkedProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.project_type??p.status,kind:"Projects"}))} onClick={id=>{window.dispatchEvent(new CustomEvent("ekara-navigate",{detail:{section:"Projects",id}}))}}/>}
-     {chosenProject&&<RelationList rows={projectComponentRows.map(c=>({id:c.id,name:c.name,code:c.component_code,meta:c.component_type??c.vendor,kind:"Components"}))} onClick={id=>window.dispatchEvent(new CustomEvent("ekara-navigate",{detail:{section:"Components",id}}))}/>}
+     {chosenCustomer&&<RelationList rows={linkedProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.project_type??p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/>}
+     {chosenProject&&<RelationList rows={projectComponentRows.map(c=>({id:c.id,name:c.name,code:c.component_code,meta:c.component_type??c.vendor,kind:"Components"}))} onClick={id=>onNavigate("Components",id)}/>}
      {chosenComponent&&<RelationList rows={detailProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.status,kind:"Projects"}))} onClick={id=>window.dispatchEvent(new CustomEvent("ekara-navigate",{detail:{section:"Projects",id}}))}/>}
     </div>
    </>}
