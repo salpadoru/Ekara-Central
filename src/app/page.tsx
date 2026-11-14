@@ -9,23 +9,6 @@ import RelationshipWorkspace from "@/components/relationship-workspace";
 import { Activity, Building2, Boxes, ChevronRight, CircleHelp, FolderKanban, Menu, Plus, X } from "lucide-react";
 
 type Section = "Customers" | "Projects" | "Components";
-const customers = [
-  { name: "Aroha Community Trust", contact: "Mereana Rangi · mereana@aroha.org.nz", projects: 2, status: "Active", initials: "AC", color: "#e8f1ff", ink: "#3565c8" },
-  { name: "Foxton War Memorial Hall", contact: "Hall Committee · admin@foxtonhall.nz", projects: 1, status: "Active", initials: "FW", color: "#e8f7ef", ink: "#27835f" },
-  { name: "North Harbour Services", contact: "James Patel · james@northharbour.nz", projects: 3, status: "Review", initials: "NH", color: "#fff2df", ink: "#b57b21" },
-];
-const projects = [
-  { name: "Aroha public website", customer: "Aroha Community Trust", type: "Website · Next.js", status: "Active", initials: "AW", color: "#e8f1ff", ink: "#3565c8" },
-  { name: "Foxton Hall website", customer: "Foxton War Memorial Hall", type: "Website · WordPress", status: "Active", initials: "FH", color: "#e8f7ef", ink: "#27835f" },
-  { name: "North Harbour portal", customer: "North Harbour Services", type: "Web application", status: "Review", initials: "NP", color: "#fff2df", ink: "#b57b21" },
-];
-const articles = [
-  { title: "Website outage — initial checks", desc: "A repeatable first-response checklist for a site that is unavailable.", type: "Runbook", updated: "Reviewed 2 days ago", icon: Server },
-  { title: "Deploy a website update", desc: "Repository, build, deployment and rollback guidance for supported projects.", type: "Procedure", updated: "Reviewed last week", icon: Code2 },
-  { title: "Emergency developer handover", desc: "Where to find infrastructure, source code, access and recovery details.", type: "Guide", updated: "Reviewed 3 weeks ago", icon: ShieldCheck },
-  { title: "Database connection troubleshooting", desc: "Common connectivity checks and escalation information.", type: "Troubleshooting", updated: "Reviewed last month", icon: HardDrive },
-];
-
 export default function Home() {
   const router = useRouter();
   const [authReady, setAuthReady] = useState(false);
