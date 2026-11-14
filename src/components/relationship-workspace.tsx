@@ -40,7 +40,8 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
  const [componentProjectIds,setComponentProjectIds]=useState<string[]>([]);
  useEffect(()=>{const db=getSupabaseBrowserClient();if(!db||!chosenComponent){setComponentProjectIds([]);return;}db.from("project_component_links").select("project_id").eq("component_id",chosenComponent.id).then(({data})=>setComponentProjectIds((data??[]).map(x=>x.project_id)));},[chosenComponent?.id]);
  const detailProjects=chosenComponent?projects.filter(p=>componentProjectIds.includes(p.id)):linkedProjects;
- const [projectComponentRows,setProjectComponentRows]=useState<Component[]>([]);
+ const linkComponentToProject=async()=>{const db=getSupabaseBrowserClient();if(!db||!chosenComponent||!projectToLink)return;const {error:e}=await db.from("project_component_links").insert({project_id:projectToLink,component_id:chosenComponent.id});if(e)setError(e.message);else{setProjectToLink("");setComponentProjectIds(v=>[...v,projectToLink]);}};
+ const [projectComponentRows,setProjectComponentRows]=useState<Component[]>([]),[projectToLink,setProjectToLink]=useState("");
  useEffect(()=>{const db=getSupabaseBrowserClient();if(!db||!chosenProject){setProjectComponentRows([]);return;}db.from("project_component_links").select("component_id").eq("project_id",chosenProject.id).then(async({data})=>{const ids=(data??[]).map(x=>x.component_id);setProjectComponentRows(components.filter(c=>ids.includes(c.id)));});},[chosenProject?.id,components]);
  const save=async(e:React.FormEvent)=>{e.preventDefault();const db=getSupabaseBrowserClient();if(!db)return;setSaving(true);setError("");let failure:string|null=null;
   if(section==="Customers"){const {data:user}=await db.auth.getUser();const {error:e1}=await db.from("customers").insert({...customerForm,created_by:user.user?.id});failure=e1?.message??null;}
@@ -71,7 +72,7 @@ export default function RelationshipWorkspace({section,filter,onNavigate}:Props)
     <div style={{marginTop:28,borderTop:"1px solid #edf0f4",paddingTop:20}}><div style={{fontSize:16,fontWeight:750,color:"#344154",marginBottom:12}}>{chosenCustomer?"Projects":chosenProject?"Components":"Used by projects"}</div>
      {chosenCustomer&&<RelationList rows={linkedProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.project_type??p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/>}
      {chosenProject&&<RelationList rows={projectComponentRows.map(c=>({id:c.id,name:c.name,code:c.component_code,meta:c.component_type??c.vendor,kind:"Components"}))} onClick={id=>onNavigate("Components",id)}/>}
-     {chosenComponent&&<RelationList rows={detailProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/>}
+     {chosenComponent&&<div style={{display:"grid",gap:12}}><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><select aria-label="Link component to project" style={{...input,maxWidth:330}} value={projectToLink} onChange={e=>setProjectToLink(e.target.value)}><option value="">Link to another project…</option>{projects.filter(p=>!componentProjectIds.includes(p.id)).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select><button type="button" className="secondary-button" disabled={!projectToLink} onClick={()=>void linkComponentToProject()}><Link2 size={15}/> Link project</button></div><RelationList rows={detailProjects.map(p=>({id:p.id,name:p.name,code:p.project_code,meta:p.status,kind:"Projects"}))} onClick={id=>onNavigate("Projects",id)}/></div>}
     </div>
    </>}
   </section>
