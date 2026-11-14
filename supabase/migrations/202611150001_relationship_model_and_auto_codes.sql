@@ -43,6 +43,14 @@ drop trigger if exists projects_assign_code on public.projects;
 create trigger projects_assign_code before insert on public.projects
 for each row execute function public.assign_project_code();
 
+-- Assign identifiers to existing records that predate the automatic numbering.
+update public.customers
+set customer_code = 'CUS-' || lpad(nextval('public.customer_code_seq')::text,5,'0')
+where customer_code is null or btrim(customer_code) = '';
+update public.projects
+set project_code = 'PRJ-' || lpad(nextval('public.project_code_seq')::text,5,'0')
+where project_code is null or btrim(project_code) = '';
+
 alter table public.projects alter column customer_id drop not null;
 
 create table if not exists public.components (
