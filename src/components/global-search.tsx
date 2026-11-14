@@ -78,14 +78,14 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
           supabase.from("project_contacts").select("id,full_name,role_title,project_id,email").or(`full_name.ilike.${pattern},email.ilike.${pattern}`).limit(6),
           supabase.from("customer_contacts").select("id,full_name,role_title,customer_id,email").or(`full_name.ilike.${pattern},email.ilike.${pattern}`).limit(6),
           supabase.from("project_documents").select("id,title,description,project_id").or(`title.ilike.${pattern},description.ilike.${pattern}`).limit(6),
-          supabase.from("project_components").select("id,name,vendor,component_type,project_id").or(`name.ilike.${pattern},vendor.ilike.${pattern},component_type.ilike.${pattern}`).limit(6),
+          supabase.from("components").select("id,name,vendor,component_type,customer_id").or(`name.ilike.${pattern},vendor.ilike.${pattern},component_type.ilike.${pattern}`).limit(6),
           supabase.from("knowledge_articles").select("id,title,summary,kind,project_id,customer_id").or(`title.ilike.${pattern},summary.ilike.${pattern}`).limit(6),
         ]);
         const failed = [customers, projects, projectContacts, customerContacts, documents, components, knowledge].find(result => result.error);
         if (failed?.error) throw failed.error;
-        const rows = [ ...(projects.data ?? []), ...(projectContacts.data ?? []).map(x => ({ customer_id: null, id: x.project_id })), ...(documents.data ?? []).map(x => ({ customer_id: null, id: x.project_id })), ...(components.data ?? []).map(x => ({ customer_id: null, id: x.project_id })), ...(knowledge.data ?? []).filter(x => x.project_id).map(x => ({ customer_id: x.customer_id, id: x.project_id })) ];
+        const rows = [ ...(projects.data ?? []), ...(projectContacts.data ?? []).map(x => ({ customer_id: null, id: x.project_id })), ...(documents.data ?? []).map(x => ({ customer_id: null, id: x.project_id })), ...(knowledge.data ?? []).filter(x => x.project_id).map(x => ({ customer_id: x.customer_id, id: x.project_id })) ];
         const projectIds = [...new Set(rows.map(x => x.id).filter(Boolean))];
-        const customerIds = [...new Set([...(customers.data ?? []).map(x => x.id), ...(customerContacts.data ?? []).map(x => x.customer_id), ...rows.map(x => x.customer_id)].filter(Boolean))];
+        const customerIds = [...new Set([...(customers.data ?? []).map(x => x.id), ...(customerContacts.data ?? []).map(x => x.customer_id), ...(components.data ?? []).map(x => x.customer_id), ...rows.map(x => x.customer_id)].filter(Boolean))];
         const [projectLookup, customerLookup] = await Promise.all([
           projectIds.length ? supabase.from("projects").select("id,name,customer_id").in("id", projectIds) : Promise.resolve({ data: [], error: null }),
           customerIds.length ? supabase.from("customers").select("id,name").in("id", customerIds) : Promise.resolve({ data: [], error: null }),
@@ -104,7 +104,7 @@ export default function GlobalSearch({ onSelect }: { onSelect: (hit: SearchHit) 
           ...(projectContacts.data ?? []).map(x => ({ id: x.id, kind: "Contact" as const, title: x.full_name, detail: x.role_title || x.email || "Project contact", ...hierarchy(x.project_id) })),
           ...(customerContacts.data ?? []).map(x => ({ id: x.id, kind: "Contact" as const, title: x.full_name, detail: x.role_title || x.email || "Customer contact", ...hierarchy(null, x.customer_id) })),
           ...(documents.data ?? []).map(x => ({ id: x.id, projectId: x.project_id, kind: "Document" as const, title: x.title, detail: x.description || "Project document", ...hierarchy(x.project_id) })),
-          ...(components.data ?? []).map(x => ({ id: x.id, kind: "Component" as const, title: x.name, detail: [x.vendor, x.component_type].filter(Boolean).join(" · ") || "Project component", ...hierarchy(x.project_id) })),
+          ...(components.data ?? []).map(x => ({ id: x.id, kind: "Component" as const, title: x.name, detail: [x.vendor, x.component_type].filter(Boolean).join(" · ") || "Reusable component", customerName: customerMap.get(x.customer_id ?? "") })),
           ...(knowledge.data ?? []).map(x => ({ id: x.id, projectId: x.project_id ?? undefined, kind: "Knowledge" as const, title: x.title, detail: x.summary || x.kind, ...hierarchy(x.project_id, x.customer_id) })),
         ];
         if (!cancelled) setHits(result);
